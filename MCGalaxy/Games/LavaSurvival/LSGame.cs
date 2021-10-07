@@ -23,6 +23,11 @@ using BlockID = System.UInt16;
 namespace MCGalaxy.Games {
     internal sealed class LSData {
         public int TimesDied;
+        public int HammerBlocks;
+        public int WaterBlocks;
+        public int SpongeBlocks;
+        public int DoorBlocks;
+        public int Teleports;
     }
     
     public sealed partial class LSGame : RoundsGame {
@@ -38,7 +43,7 @@ namespace MCGalaxy.Games {
         public static LSGame Instance = new LSGame();
         public LSGame() { Picker = new LevelPicker(); }
         
-        LSData Get(Player p) {
+        internal static LSData Get(Player p) {
             object data;
             if (!p.Extras.TryGet("MCG_LS_DATA", out data)) {
                 data = new LSData();

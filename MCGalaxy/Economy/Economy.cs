@@ -87,7 +87,8 @@ namespace MCGalaxy.Eco {
         
         public static List<Item> Items = new List<Item>() { new ColorItem(), new TitleColorItem(),
             new TitleItem(), new RankItem(), new LevelItem(), new LoginMessageItem(),
-            new LogoutMessageItem(), new BlocksItem(), new QueueLevelItem(),
+            new LogoutMessageItem(), new LifeItem(), new BlocksItem(), new HammerItem(), 
+            new WaterItem(), new SpongeItem(), new DoorItem(), new TeleportItem(), new QueueLevelItem(),
             new InfectMessageItem(), new NickItem(), new ReviveItem(),
             new InvisibilityItem(), new SnackItem() };
         

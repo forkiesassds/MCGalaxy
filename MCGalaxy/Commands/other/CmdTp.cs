@@ -76,12 +76,14 @@ namespace MCGalaxy.Commands.Misc {
             Vec3S32 P;
             pos = p.Pos; yaw = ori.Rot.RotY; pitch = ori.Rot.HeadX;
             
-            if (!precise) {
+            if (!precise) 
+            {
                 // relative to feet block coordinates
                 P = p.Pos.FeetBlockCoords;
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return false;
                 pos = Position.FromFeetBlockCoords(P.X, P.Y, P.Z);
-            } else {
+            } else 
+            {
                 // relative to feet position exactly
                 P = new Vec3S32(p.Pos.X, p.Pos.Y - Entities.CharacterHeight, p.Pos.Z);
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return false;
@@ -89,18 +91,21 @@ namespace MCGalaxy.Commands.Misc {
             }
             
             int angle = 0;            
-            if (args.Length > 3) {
+            if (args.Length > 3) 
+            {
                 if (!CommandParser.GetInt(p, args[3], "Yaw angle", ref angle, -360, 360)) return false;
                 yaw = Orientation.DegreesToPacked(angle);
             }            
-            if (args.Length > 4) {
+            if (args.Length > 4) 
+            {
                 if (!CommandParser.GetInt(p, args[4], "Pitch angle", ref angle, -360, 360)) return false;
                 pitch = Orientation.DegreesToPacked(angle);
             }
             return true;
         }
         
-        static void TeleportCoords(Player p, string[] args, bool precise) {
+        static void TeleportCoords(Player p, string[] args, bool precise) 
+        {
             Position pos; byte yaw, pitch;
             if (!GetTeleportCoords(p, p, args, precise, out pos, out yaw, out pitch)) return;
 
@@ -108,27 +113,45 @@ namespace MCGalaxy.Commands.Misc {
             p.SendPos(Entities.SelfID, pos, new Orientation(yaw, pitch));
         }
         
-        static void SavePreTeleportState(Player p) {
+        static void SavePreTeleportState(Player p) 
+        {
             p.PreTeleportMap = p.level.name;
             p.PreTeleportPos = p.Pos;
             p.PreTeleportRot = p.Rot;
         }
         
-        static bool CheckPlayer(Player p, Player target, CommandData data) {
-            if (target.level.IsMuseum) {
+        static bool CheckPlayer(Player p, Player target, CommandData data) 
+        {
+            if (target.level.IsMuseum) 
+            {
                 p.Message("{0} &Sis in a museum.", p.FormatNick(target)); return false;
             }          
             if (!Server.Config.HigherRankTP && !CheckRank(p, data, target, "teleport to", true)) return false;
             
             IGame game = IGame.GameOn(target.level);
-            if (!p.Game.Referee && game != null) {
+            if (!p.Game.Referee && game != null) 
+            {
+                if (LSGame.Instance.Map == p.level) 
+                {
+                    if ((LSGame.Get(p).Teleports) != 0)
+                    {
+                        (LSGame.Get(p).Teleports)--;
+                        return true;
+                    }
+                    else if (MCGalaxy.Eco.Economy.EnabledItemNames().Contains("Teleport") && MCGalaxy.Eco.Economy.Enabled)
+                    {
+                        p.Message("You are out of teleports.");
+                        return false;
+                    }
+                }
                 p.Message("You can only teleport to players in " +
                                "a game when you are in referee mode."); return false;
             }
             return true;
         }
         
-        public override void Help(Player p) {
+        public override void Help(Player p) 
+        {
             p.Message("&HUse ~ before a coordinate to move relative to current position");
             p.Message("&T/TP [x y z] <yaw> <pitch>");
             p.Message("&HTeleports yourself to the given block coordinates.");

@@ -19,10 +19,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace MCGalaxy.Games {
-    public sealed partial class LSGame : RoundsGame {
+namespace MCGalaxy.Games 
+{
+    public sealed partial class LSGame : RoundsGame 
+    {
 
-        protected override void DoRound() {
+        protected override void DoRound() 
+        {
             if (!Running) return;
 
             ResetPlayerDeaths();
@@ -33,16 +36,21 @@ namespace MCGalaxy.Games {
             Map.SetPhysics(destroyMode ? 2 : 1);           
             int secs = 0, layerSecs = 0;
             
-            while (RoundInProgress && secs < roundTotalSecs) {
+            while (RoundInProgress && secs < roundTotalSecs) 
+            {
                 if (!Running) return;
                 if ((secs % 60) == 0 && !flooded) { Map.Message(FloodTimeLeftMessage()); }
                 
-                if (secs >= floodDelaySecs) {
-                    if (layerMode && (layerSecs % layerIntervalSecs) == 0 && curLayer <= cfg.LayerCount) {
+                if (secs >= floodDelaySecs) 
+                {
+                    if (layerMode && (layerSecs % layerIntervalSecs) == 0 && curLayer <= cfg.LayerCount) 
+                    {
                         ushort y = (ushort)(cfg.LayerPos.Y + ((cfg.LayerHeight * curLayer) - 1));
                         Map.Blockchange(cfg.LayerPos.X, y, cfg.LayerPos.Z, floodBlock, true);
                         curLayer++;
-                    } else if (!layerMode && secs == floodDelaySecs) {
+                    } 
+                    else if (!layerMode && secs == floodDelaySecs) 
+                    {
                         Map.Message("&4Look out, here comes the flood!");
                         Logger.Log(LogType.GameActivity, "[Lava Survival] Starting map flood.");
                         Map.Blockchange(cfg.FloodPos.X, cfg.FloodPos.Y, cfg.FloodPos.Z, floodBlock, true);
@@ -56,7 +64,8 @@ namespace MCGalaxy.Games {
             }
         }
 
-        public override void EndRound() {
+        public override void EndRound() 
+        {
             if (!RoundInProgress) return;
             RoundInProgress = false;
             flooded = false;
@@ -65,17 +74,20 @@ namespace MCGalaxy.Games {
             Map.Message("The round has ended!");
         }
 
-        internal string FloodTimeLeftMessage() {
+        internal string FloodTimeLeftMessage() 
+        {
             TimeSpan left = RoundStart.Add(cfg.FloodTime) - DateTime.UtcNow;
             return "&3" + left.Shorten(true) + " &Suntil the flood.";
         }
         
-        internal string RoundTimeLeftMessage() {
+        internal string RoundTimeLeftMessage() 
+        {
             TimeSpan left = RoundStart.Add(cfg.RoundTime) - DateTime.UtcNow;
             return "&3" + left.Shorten(true) + " &Suntil the round ends.";
         }
 
-        public override void OutputStatus(Player p) {
+        public override void OutputStatus(Player p) 
+        {
             string block = waterMode ? "water" : "lava";
             
             // TODO: send these messages if player is op
@@ -95,19 +107,24 @@ namespace MCGalaxy.Games {
             p.Message(RoundTimeLeftMessage());
         }
 
-        protected override bool SetMap(string map) {
+        protected override bool SetMap(string map) 
+        {
             if (!base.SetMap(map)) return false;
             Map.Config.PhysicsOverload = 1000000;
             return true;
         }
 
-        void KillPlayer(Player p) {
+        void KillPlayer(Player p) 
+        {
             if (Config.MaxLives <= 0) return;
             Get(p).TimesDied++;
             if (!IsPlayerDead(p)) return;
             
             Chat.MessageFromLevel(p, "λNICK &4ran out of lives, and is out of the round!");
-            p.Message("&4You can still watch, but you cannot build.");
+            if(Eco.Economy.EnabledItemNames().Contains("Life") && Eco.Economy.Enabled)
+                p.Message("&4You can still watch, but you cannot build. Unless you buy a life using /buy life.");
+            else
+                p.Message("&4You can still watch, but you cannot build.");
         }
     }
 }

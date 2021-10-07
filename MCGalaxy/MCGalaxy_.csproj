@@ -131,6 +131,7 @@
     <Compile Include="Commands\building\CmdDraw.cs" />
     <Compile Include="Commands\building\CmdDrill.cs" />
     <Compile Include="Commands\building\CmdFill.cs" />
+    <Compile Include="Commands\building\CmdHammer.cs" />
     <Compile Include="Commands\building\CmdHollow.cs" />
     <Compile Include="Commands\building\CmdImageprint.cs" />
     <Compile Include="Commands\building\CmdLine.cs" />
@@ -459,6 +460,7 @@
     <Compile Include="Economy\ZombieItems.cs" />
     <Compile Include="Economy\Economy.cs" />
     <Compile Include="Economy\Item.cs" />
+    <Compile Include="Economy\LavaItems.cs" />
     <Compile Include="Economy\LevelItem.cs" />
     <Compile Include="Economy\MessageItems.cs" />
     <Compile Include="Economy\NameItems.cs" />

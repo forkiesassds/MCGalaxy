@@ -25,6 +25,7 @@ namespace MCGalaxy.Games {
     public sealed partial class LSGame : RoundsGame {
 
         protected override void HookEventHandlers() {
+            OnBlockChangingEvent.Register(HandleBlockChanging, Priority.High);  
             OnJoinedLevelEvent.Register(HandleJoinedLevel, Priority.High);           
             OnPlayerConnectEvent.Register(HandlePlayerConnect, Priority.High);
             OnPlayerDeathEvent.Register(HandlePlayerDeath, Priority.High);
@@ -33,6 +34,7 @@ namespace MCGalaxy.Games {
         }
         
         protected override void UnhookEventHandlers() {
+            OnBlockChangingEvent.Unregister(HandleBlockChanging);  
             OnJoinedLevelEvent.Unregister(HandleJoinedLevel);            
             OnPlayerConnectEvent.Unregister(HandlePlayerConnect);
             OnPlayerDeathEvent.Unregister(HandlePlayerDeath);
@@ -52,13 +54,67 @@ namespace MCGalaxy.Games {
             p.Message("&cLava Survival &Sis running! Type &T/ls go &Sto join");
         }
         
-        void HandlePlayerDeath(Player p, BlockID block) {
+        void HandlePlayerDeath(Player p, BlockID block) 
+        {
             if (p.level != Map) return;
          
-            if (IsPlayerDead(p)) {
+            if (IsPlayerDead(p)) 
+            {
                 p.cancelDeath = true;
-            } else {
+            } 
+            else 
+            {
                 KillPlayer(p);
+            }
+        }
+
+        void HandleBlockChanging (Player p, ushort x, ushort y, ushort z, BlockID block, bool placing, ref bool cancel)
+        {
+            if (LSGame.Instance.Map != p.level) return;
+            LSData data = Get(p);
+            ushort blockid = block;
+            if (placing || (!placing && p.painting)) 
+            {
+                if (p.ModeBlock != Block.Invalid) blockid = p.ModeBlock; //workaround to prevent players from using /mode to bypass this restriction.
+                if (blockid == Block.Water || blockid == Block.StillWater || blockid == Block.Sponge || blockid == Block.Door_Log)
+                {
+                    int blocks = 0;
+                    switch(blockid) 
+                    {
+                        case Block.Water: 
+                            blocks = data.WaterBlocks; break;
+                        case Block.StillWater: 
+                            blocks = data.WaterBlocks; break;
+                        case Block.Sponge:
+                            blocks = data.SpongeBlocks; break;
+                        case Block.Door_Log:
+                            blocks = data.DoorBlocks; break;
+                    }
+
+                    if (blocks <= 0) 
+                    {
+                        p.Message("You have no blocks left.");
+                        p.RevertBlock(x, y, z); cancel = true; return;
+                    }
+
+                    //ugly copy paste!!!!!
+                    switch(blockid) 
+                    {
+                        case Block.Water: 
+                            data.WaterBlocks--; break;
+                        case Block.StillWater: 
+                            data.WaterBlocks--; break;
+                        case Block.Sponge:
+                            data.SpongeBlocks--; break;
+                        case Block.Door_Log:
+                            data.DoorBlocks--; break;
+                    }
+                    
+                    if ((blocks % 10) == 0 || blocks <= 10) 
+                    {
+                        p.Message("Blocks Left: &4" + blocks);
+                    }
+                }
             }
         }
     }
