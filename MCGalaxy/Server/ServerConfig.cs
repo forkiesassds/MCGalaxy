@@ -68,8 +68,6 @@ namespace MCGalaxy {
         public bool CoreSecretCommands = true;
         [ConfigBool("restart-on-error", "Error handling", true)]
         public bool restartOnError = true;
-        [ConfigBool("software-staff-prefixes", "Other", true)]
-        public bool SoftwareStaffPrefixes = true;
         
         [ConfigInt("position-interval", "Other", 100, 20, 2000)]
         public int PositionUpdateInterval = 100;

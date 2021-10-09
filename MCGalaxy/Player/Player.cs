@@ -126,10 +126,6 @@ namespace MCGalaxy {
             IGame game = IGame.GameOn(level);
             if (game != null) game.AdjustPrefix(this, ref prefix);
             
-            bool isDev = Server.Devs.CaselessContains(truename);
-            bool devPrefix = Server.Config.SoftwareStaffPrefixes;
-            
-            if (devPrefix && isDev) prefix += MakeTitle("Dev", "&9");
             if (title.Length > 0)   prefix += MakeTitle(title, titlecolor);
         }
         
